@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Pomodoro
+Exec=/path/to/pomodoro.sh
+Type=Application
+Terminal=false
+Icon=/path/to/pomodoro.png
