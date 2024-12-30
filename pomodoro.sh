@@ -4,7 +4,7 @@
 
 while true; do
     # Question dialog
-    if zenity --question --text="Chceš zažít svůj třicetiminutový pracovní interval?"; then
+    if zenity --question --text="Chceš začít svůj třicetiminutový pracovní interval?"; then
         # User said yes
         # Enable do not disturb mode
         gsettings set org.gnome.desktop.notifications show-banners false
