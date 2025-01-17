@@ -1,31 +1,64 @@
 #!/usr/bin/env bash
 
-# A Bash sciript for working and resting productivity with pomodoro method
+# Bash skript pro načasování práce a odpočinku pomodoro metodou
 
 while true; do
-    # Question dialog
-    if zenity --question --text="Chceš začít svůj třicetiminutový pracovní interval?"; then
-        # User said yes
-        # Enable do not disturb mode
-        gsettings set org.gnome.desktop.notifications show-banners false
-        sleep 30m
-        
-        # Play a notification sound
-        ffplay /usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga -autoexit -nodisp
-        # Show info dialog for resting after 30 minutes
-        zenity --info --text="30 minut uplynulo. Nyní je čas na 5 minut odpočinku. Stiskni OK pro pokračování."
-        
-        # Disable do not disturb mode
-        gsettings set org.gnome.desktop.notifications show-banners true
-        # Sleep again
-        sleep 5m
-        # Play a notification sound
-        ffplay /usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga -autoexit -nodisp
-    else
-    	# Disable do not disturb mode
-        gsettings set org.gnome.desktop.notifications show-banners true
-        # User said no, end the script
+    # Výběr pracovního intervalu
+    WORK_INTERVAL=$(zenity --list --title="Vyber si délku pracovního intervalu" --column="Pracovní interval" "20 minut" "30 minut" "40 minut" --width=300 --height=200)
+
+    # Zkontroluj, zda uživatel zavřel okno
+    if [ $? -ne 0 ]; then
         exit
     fi
+
+    # Nastavení délky pracovního intervalu
+    case $WORK_INTERVAL in
+        "20 minut")
+            SLEEP_TIME="20m"
+            ;;
+        "30 minut")
+            SLEEP_TIME="30m"
+            ;;
+        "40 minut")
+            SLEEP_TIME="40m"
+            ;;
+        *)
+            continue
+            ;;
+    esac
+
+    # Uživatel souhlasil s pracovním intervalem
+    gsettings set org.gnome.desktop.notifications show-banners false
+    sleep $SLEEP_TIME
+
+    # Přehrání zvukové notifikace
+    ffplay /usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga -autoexit -nodisp
+
+    # Zobrazí informační dialog pro odpočinek
+    REST_INTERVAL=$(zenity --list --title="Vyber si délku odpočinku" --column="Odpočinek" "5 minut" "10 minut" --width=350 --height=200)
+
+    # Zkontroluj, zda uživatel zavřel okno
+    if [ $? -ne 0 ]; then
+        exit
+    fi
+
+    # Nastavení délky odpočinku
+    case $REST_INTERVAL in
+        "5 minut")
+            REST_TIME="5m"
+            ;;
+        "10 minut")
+            REST_TIME="10m"
+            ;;
+        *)
+            continue
+            ;;
+    esac
+
+    # Zrušení režimu nerušit
+    gsettings set org.gnome.desktop.notifications show-banners true
+    sleep $REST_TIME
+
+    # Přehrání zvukové notifikace
+    ffplay /usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga -autoexit -nodisp
 done
-	
